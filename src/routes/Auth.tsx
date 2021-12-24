@@ -1,5 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { EMAIL_VALIDATION_CHECK } from '../types.d';
+import { authService } from '../fbase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 type AuthInputs = {
   email: string;
@@ -17,7 +19,21 @@ function Auth() {
   });
 
   const onSubmit = () => {
-    console.log(getValues());
+    const { email, password } = getValues();
+    createUserWithEmailAndPassword(authService, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        // ...
+        console.log('create user', user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(`error code:${errorCode}`);
+        console.log(`error message:${errorMessage}`);
+        // ..
+      });
   };
 
   return (

@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { authService } from '../fbase';
-import Router from './Router';
+import LoggedInRouter from './router/logged-in-router';
+import LoggedOutRouter from './router/logged-out-router';
 
+// basic user info
 export interface UserInfo {
-  uid: string | null;
+  uid: string;
+  email: string | null;
+  emailVerified: boolean;
 }
 
 function App() {
   const [ready, setReady] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState<UserInfo | null>();
+  const [loggedInUser, setLoggedInUser] = useState<UserInfo | null>(null);
   useEffect(() => {
     onAuthStateChanged(authService, (user) => {
       if (user) {
@@ -21,13 +25,17 @@ function App() {
     });
   }, []);
 
-  console.log(loggedInUser);
+  console.log('listener', loggedInUser);
 
   if (ready === false) {
     return <span>Loading...</span>;
   }
 
-  return <Router uid={loggedInUser ? loggedInUser.uid : null} />;
+  return loggedInUser ? (
+    <LoggedInRouter {...loggedInUser} />
+  ) : (
+    <LoggedOutRouter />
+  );
 }
 
 export default App;
