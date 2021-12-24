@@ -1,14 +1,31 @@
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { EMAIL_VALIDATION_CHECK } from '../types.d';
 import { authService } from '../fbase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
 type AuthInputs = {
   email: string;
   password: string;
 };
 
+enum AuthErrorType {
+  'USER_EXIST' = 'auth/email-already-in-use',
+  'USER_NOT_FOUND' = 'auth/user-not-found',
+  'WRONG_PASSWORD' = 'auth/wrong-password',
+  'TOO_MANY_REQUESTS' = 'auth/too-many-requests',
+  'EXIST_DIFFERENT_CREDENTIAL' = 'auth/account-exists-with-different-credential',
+}
+
+type AuthErrorCode = {
+  code: string;
+};
+
 function Auth() {
+  const [authError, setAuthError] = useState<string>();
   const {
     register,
     getValues,
@@ -24,15 +41,24 @@ function Auth() {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        // ...
-        console.log('create user', user);
+        setAuthError('');
       })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(`error code:${errorCode}`);
-        console.log(`error message:${errorMessage}`);
-        // ..
+      .catch(async (error) => {
+        switch ((error as AuthErrorCode).code) {
+          // 이미 사용중인 이메일 : log in
+          case AuthErrorType.USER_EXIST:
+            setAuthError('Account already in use');
+            signInWithEmailAndPassword(authService, email, password).then(
+              (userCredential) => {
+                // Logged in
+                const user = userCredential.user;
+                setAuthError('');
+              }
+            );
+            break;
+          default:
+            setAuthError('Unexpected Error');
+        }
       });
   };
 
@@ -65,6 +91,7 @@ function Auth() {
       />
       {errors.password?.message && <div>{errors.password.message}</div>}
       <button disabled={isValid ? false : true}>Log In</button>
+      {authError && <span>{authError}</span>}
     </form>
   );
 }
