@@ -1,5 +1,6 @@
 import { UserInfo } from '../components/App';
 import { authService } from '../fbase';
+import { sendEmailVerification } from 'firebase/auth';
 
 function Home(user: UserInfo) {
   const onLogout = () => {
@@ -7,10 +8,22 @@ function Home(user: UserInfo) {
       authService.signOut();
     }
   };
+
+  const onEmailVerify = () => {
+    sendEmailVerification(authService.currentUser!).then(() => {
+      alert('Email verification sent!');
+    });
+  };
+
   return (
     <div>
       <h2>You are Logged In</h2>
-      {!user.emailVerified && <h4>email is not verified</h4>}
+      {!user.emailVerified && (
+        <div>
+          <h4>email is not verified</h4>
+          <button onClick={onEmailVerify}>Click to verify &rarr;</button>
+        </div>
+      )}
       <button onClick={onLogout}>Log out</button>
     </div>
   );

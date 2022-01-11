@@ -10,6 +10,7 @@ import {
 type AuthInputs = {
   email: string;
   password: string;
+  emailOnly: string;
 };
 
 enum AuthErrorType {
@@ -35,12 +36,11 @@ function Auth() {
     mode: 'onChange',
   });
 
-  const onSubmit = () => {
+  const onEmailAndPasswordLogin = () => {
     const { email, password } = getValues();
     createUserWithEmailAndPassword(authService, email, password)
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
         setAuthError('');
       })
       .catch(async (error) => {
@@ -51,7 +51,6 @@ function Auth() {
             signInWithEmailAndPassword(authService, email, password).then(
               (userCredential) => {
                 // Logged in
-                const user = userCredential.user;
                 setAuthError('');
               }
             );
@@ -62,37 +61,66 @@ function Auth() {
       });
   };
 
+  const onEmailLogin = () => {
+    console.log('email login');
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        {...register('email', {
-          required: 'Email is required.',
-          pattern: {
-            value: EMAIL_VALIDATION_CHECK,
-            message: 'Please enter a valid email.',
-          },
-        })}
-        type='email'
-        placeholder='Email'
-        className='input'
-      />
-      {errors.email?.message && <div>{errors.email.message}</div>}
-      <input
-        {...register('password', {
-          required: 'Password is required.',
-          minLength: {
-            value: 4,
-            message: 'Password should contain more than 4 chars.',
-          },
-        })}
-        type='password'
-        placeholder='Password'
-        className='input'
-      />
-      {errors.password?.message && <div>{errors.password.message}</div>}
-      <button disabled={isValid ? false : true}>Log In</button>
-      {authError && <span>{authError}</span>}
-    </form>
+    <>
+      <div>
+        <h3>Email, Password로 로그인하기</h3>
+        <form onSubmit={handleSubmit(onEmailAndPasswordLogin)}>
+          <input
+            {...register('email', {
+              required: 'Email is required.',
+              pattern: {
+                value: EMAIL_VALIDATION_CHECK,
+                message: 'Please enter a valid email.',
+              },
+            })}
+            type='email'
+            placeholder='Email'
+            className='input'
+          />
+          {errors.email?.message && <div>{errors.email.message}</div>}
+          <input
+            {...register('password', {
+              required: 'Password is required.',
+              minLength: {
+                value: 4,
+                message: 'Password should contain more than 4 chars.',
+              },
+            })}
+            type='password'
+            placeholder='Password'
+            className='input'
+          />
+          {errors.password?.message && <div>{errors.password.message}</div>}
+          <button disabled={isValid ? false : true}>Log In</button>
+          {authError && <span>{authError}</span>}
+        </form>
+      </div>
+      <div>
+        <h3>Email 로그인하기</h3>
+        <form onSubmit={handleSubmit(onEmailLogin)}>
+          <input
+            {...register('emailOnly', {
+              required: 'Email is required.',
+              pattern: {
+                value: EMAIL_VALIDATION_CHECK,
+                message: 'Please enter a valid email.',
+              },
+            })}
+            type='email'
+            placeholder='Email'
+            className='input'
+          />
+          {errors.emailOnly?.message && <div>{errors.emailOnly.message}</div>}
+          <button disabled={isValid ? false : true}>Log In</button>
+          {authError && <span>{authError}</span>}
+        </form>
+      </div>
+    </>
   );
 }
 
