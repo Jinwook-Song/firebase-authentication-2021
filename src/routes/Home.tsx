@@ -9,6 +9,7 @@ function Home(user: UserInfo) {
     }
   };
 
+  // TODO: Verify Email 양식 설정
   const onEmailVerify = () => {
     sendEmailVerification(authService.currentUser!).then(() => {
       alert('Email verification sent!');
