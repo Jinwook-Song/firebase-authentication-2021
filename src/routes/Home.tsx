@@ -1,11 +1,17 @@
 import { UserInfo } from '../components/App';
 import { authService } from '../fbase';
-import { sendEmailVerification } from 'firebase/auth';
+import { sendEmailVerification, getAuth } from 'firebase/auth';
 
 function Home(user: UserInfo) {
   const onLogout = () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
       authService.signOut();
+    }
+  };
+
+  const onDelete = () => {
+    if (window.confirm('계정을 삭제하시겠습니까?')) {
+      getAuth().currentUser?.delete();
     }
   };
 
@@ -26,6 +32,7 @@ function Home(user: UserInfo) {
         </div>
       )}
       <button onClick={onLogout}>Log out</button>
+      <button onClick={onDelete}>Delete Account</button>
     </div>
   );
 }

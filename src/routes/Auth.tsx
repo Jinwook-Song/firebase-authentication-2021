@@ -96,7 +96,7 @@ function Auth() {
             className='input'
           />
           {errors.password?.message && <div>{errors.password.message}</div>}
-          <button disabled={isValid ? false : true}>Log In</button>
+          <button>Log In</button>
           {authError && <span>{authError}</span>}
         </form>
       </div>
@@ -105,7 +105,7 @@ function Auth() {
         <form onSubmit={handleSubmit(onEmailLogin)}>
           <input
             {...register('emailOnly', {
-              required: 'Email is required.',
+              // required: 'Email is required.',
               pattern: {
                 value: EMAIL_VALIDATION_CHECK,
                 message: 'Please enter a valid email.',
