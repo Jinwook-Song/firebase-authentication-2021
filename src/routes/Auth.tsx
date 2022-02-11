@@ -34,6 +34,10 @@ function Auth() {
     formState: { errors, isValid },
   } = useForm<AuthInputs>({
     mode: 'onChange',
+    defaultValues: {
+      email: 'wlsdnr129@naver.com',
+      password: 'asdfasdf',
+    },
   });
 
   const onEmailAndPasswordLogin = () => {
